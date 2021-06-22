@@ -10,6 +10,6 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar' })
   password?: string;
 
-  @OneToMany(() => Portfolio, (portfolio) => portfolio.id)
+  @OneToMany(() => Portfolio, (portfolio) => portfolio.user, { cascade: true })
   portfolios: Portfolio[];
 }
