@@ -32,6 +32,21 @@
 $ npm install
 ```
 
+## If work on Linux
+You should made change in package.json 
+```bash 
+"pretypeorm": "(del /f ormconfig.json || ...
+```
+TO
+```bash 
+"pretypeorm": "(rm ormconfig.json || ...
+```
+
+## Made migration
+```bash 
+$ npm run typeorm:migration:run
+```
+
 ## Running the app
 
 ```bash
