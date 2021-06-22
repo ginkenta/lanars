@@ -1,12 +1,13 @@
-// import { Module } from '@nestjs/common';
-// import { TypeOrmModule } from '@nestjs/typeorm';
-// import { configService } from 'src/config/config.service';
-// import { AppController } from './app.controller';
-// import { AppService } from './app.service';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Portfolio } from '../../models/portfolio.entity';
+import { PortfolioController } from './portfolio.controller';
+import { PortfolioService } from './portfolio.service';
 
-// @Module({
-//   imports: [TypeOrmModule.forRoot(configService.getTypeOrmConfig())],
-//   controllers: [AppController],
-//   providers: [AppService],
-// })
-// export class AppModule {}
+@Module({
+  imports: [TypeOrmModule.forFeature([Portfolio])],
+  providers: [PortfolioService],
+  controllers: [PortfolioController],
+  exports: [PortfolioService],
+})
+export class PortfolioModule {}
