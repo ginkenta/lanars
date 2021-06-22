@@ -33,13 +33,13 @@ export class PortfolioController {
   @Delete('/:portfolio')
   async deletePortfolio(
     @Req() req: Request,
-    @Param('portfolioId') portfolio: 'uuid',
+    @Param('portfolio') portfolio: 'uuid',
   ): Promise<any> {
     // @ts-ignore
     const { id: user } = req?.user;
     const portf = await this.portfolioService.findOne({
       user,
-      portfolio,
+      id: portfolio,
     });
     if (!portf) throw new Error('Bad portfolio id');
     return await this.portfolioService.deleteOne(portf);
