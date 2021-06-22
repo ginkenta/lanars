@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { Image } from '../../models/image.entity';
+import { PortfolioModule } from '../portfolio/portfolio.module';
 import { ImageController } from './image.controller';
 import { ImageService } from './image.service';
 
@@ -33,6 +34,7 @@ import { ImageService } from './image.service';
       }),
       inject: [ConfigService],
     }),
+    PortfolioModule,
   ],
   providers: [ImageService],
   controllers: [ImageController],

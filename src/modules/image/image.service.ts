@@ -14,11 +14,12 @@ export class ImageService {
     return await this.imageRepository.findOne({ where: search });
   }
 
-  async findAll(portfolioId: 'uuid'): Promise<Image[] | undefined> {
-    return await this.imageRepository
-      .createQueryBuilder('p')
-      .where('p.portfolioId = :portfolioId', { portfolioId })
-      .getMany();
+  async findAll({ limit, offset }): Promise<Image[] | undefined> {
+    return await this.imageRepository.find({
+      skip: offset,
+      take: limit,
+      order: { createDateTime: 'DESC' },
+    });
   }
 
   async deleteOne(Image: Image): Promise<any> {

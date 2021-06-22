@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   Param,
   Post,
+  Query,
   Req,
   UploadedFile,
   UseGuards,
@@ -15,21 +17,36 @@ import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { Image } from '../../models/image.entity';
+import { PortfolioService } from '../portfolio/portfolio.service';
 import { ImageService } from './image.service';
 
 @Controller('image')
 export class ImageController {
-  constructor(private readonly imageService: ImageService) {}
+  constructor(
+    private readonly imageService: ImageService,
+    private readonly portfolioService: PortfolioService,
+  ) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Post('/create')
   async createImage(
     @Req() req: Request,
-    @Body() body: { name: string; description: string; link: string },
+    @Body()
+    body: {
+      name: string;
+      description: string;
+      link: string;
+      portfolio: 'uuid';
+    },
   ): Promise<Image> {
     // @ts-ignore
     const { id: user } = req?.user;
-    return await this.imageService.create({ ...body, user });
+    const existPortfolio = await this.portfolioService.findOne({
+      user,
+      id: body.portfolio,
+    });
+    if (!existPortfolio) throw new BadRequestException();
+    return await this.imageService.create({ ...body, comments: [] });
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -44,19 +61,24 @@ export class ImageController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Delete('/:portfolio')
+  @Delete('/:id')
   async deletePortfolio(
     @Req() req: Request,
-    @Param('portfolioId') portfolio: 'uuid',
+    @Param('id') id: 'uuid',
   ): Promise<any> {
     // @ts-ignore
     const { id: user } = req?.user;
-    const portf = await this.imageService.findOne({
-      user,
-      portfolio,
+    const image = await this.imageService.findOne({
+      id,
     });
-    if (!portf) throw new Error('Bad portfolio id');
-    return await this.imageService.deleteOne(portf);
+    if (!image) throw new Error('Bad image id');
+    const portf = await this.portfolioService.findOne({
+      user,
+      id: image.portfolio,
+    });
+    if (!portf) throw new BadRequestException();
+
+    return await this.imageService.deleteOne(image);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -65,12 +87,12 @@ export class ImageController {
     return await this.imageService.findOne({ id });
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get()
-  async getMyPortfolios(@Req() req: Request): Promise<Image> {
+  async getImages(
+    @Query('limit') limit = 0,
+    @Query('offset') offset = 0,
+  ): Promise<Image> {
     // @ts-ignore
-    const { id: userId } = req?.user;
-    // @ts-ignore
-    return await this.imageService.findAll(userId);
+    return await this.imageService.findAll({ limit, offset });
   }
 }
