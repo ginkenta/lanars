@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../models/user.entity';
 import { Repository } from 'typeorm';
+import { UserSignupInterface } from 'src/interfaces/user/signup';
 
 @Injectable()
 export class UserService {
@@ -19,5 +20,9 @@ export class UserService {
 
   async find(): Promise<User[] | []> {
     return await this.userRepository.find();
+  }
+
+  async createNewUser(input: UserSignupInterface): Promise<User> {
+    return await this.userRepository.save(input);
   }
 }
