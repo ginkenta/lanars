@@ -25,4 +25,8 @@ export class UserService {
   async createNewUser(input: UserSignupInterface): Promise<User> {
     return await this.userRepository.save(input);
   }
+
+  async delete(id: 'uuid'): Promise<any> {
+    return await this.userRepository.delete(id);
+  }
 }
