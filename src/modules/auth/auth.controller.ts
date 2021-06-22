@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
   Controller,
-  Get,
-  Param,
   Post,
   UseGuards,
   Req,
@@ -24,13 +22,21 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(@Req() req: Request) {
-    // @ts-ignore
-    return req.user;
+    //@ts-ignore
+    return this.authService.createToken(req?.user);
   }
 
   @Post('signup')
   async signup(@Body() body: UserSignupInterface) {
     const password = await this.authService.createPassword(body.password);
-    return await this.userService.createNewUser({ ...body, password });
+    const user = await this.userService.createNewUser({ ...body, password });
+    return this.authService.createToken(user);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('logout')
+  async logout(@Req() req: Request): Promise<boolean> {
+    const token = req?.headers?.['authorization']?.split(' ')?.[1];
+    return await this.authService.addExpiredToken(token);
   }
 }
