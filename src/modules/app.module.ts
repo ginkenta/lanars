@@ -7,18 +7,25 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
+import { PortfolioModule } from './portfolio/portfolio.module';
+import { PortfolioController } from './portfolio/portfolio.controller';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
     UserModule,
     AuthModule,
+    PortfolioModule,
+    ImageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CheckTokenIfAvailibleMiddleware).forRoutes(UserController);
+    consumer
+      .apply(CheckTokenIfAvailibleMiddleware)
+      .forRoutes(UserController, PortfolioController);
   }
 }
