@@ -1,9 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CheckTokenIfAvailibleMiddleware } from '../middlewares/is.token.availible.middleware';
 import { configService } from '../config/config.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -15,4 +17,8 @@ import { UserModule } from './user/user.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(CheckTokenIfAvailibleMiddleware).forRoutes(UserController);
+  }
+}
