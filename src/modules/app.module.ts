@@ -10,6 +10,7 @@ import { UserModule } from './user/user.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
 import { PortfolioController } from './portfolio/portfolio.controller';
 import { ImageModule } from './image/image.module';
+import { ImageController } from './image/image.controller';
 
 @Module({
   imports: [
@@ -26,6 +27,6 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(CheckTokenIfAvailibleMiddleware)
-      .forRoutes(UserController, PortfolioController);
+      .forRoutes(UserController, PortfolioController, ImageController);
   }
 }

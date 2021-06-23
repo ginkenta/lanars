@@ -87,6 +87,7 @@ export class ImageController {
     return await this.imageService.findOne({ id });
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   async getImages(
     @Query('limit') limit = 0,
